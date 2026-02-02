@@ -23,8 +23,10 @@
       border-radius: 20px;
       text-align: center;
       box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-      max-width: 90%;
+      max-width: 320px;
+      width: 90%;
       position: relative;
+      height: 250px; /* fixed height for mobile-safe button movement */
     }
 
     h1 {
@@ -34,7 +36,8 @@
 
     .buttons {
       position: relative;
-      height: 140px;
+      width: 100%;
+      height: 100%;
     }
 
     button {
@@ -53,7 +56,7 @@
       background: #ff2f68;
       color: white;
       left: 50%;
-      top: 0;
+      top: 20px;
       transform: translateX(-50%);
     }
 
@@ -61,7 +64,7 @@
       background: #ddd;
       color: #555;
       left: 50%;
-      bottom: 0;
+      bottom: 20px;
       transform: translateX(-50%);
     }
 
@@ -91,6 +94,7 @@
 
   <script>
     const yesBtn = document.getElementById("yes");
+    const card = document.querySelector('.card');
     let clickCount = 0;
     const maxClicks = 5;
 
@@ -98,22 +102,23 @@
       clickCount++;
 
       if (clickCount <= maxClicks) {
-        // Get button size
+        // Get card dimensions
+        const cardRect = card.getBoundingClientRect();
         const btnWidth = yesBtn.offsetWidth;
         const btnHeight = yesBtn.offsetHeight;
 
-        // Get viewport size
-        const maxX = window.innerWidth - btnWidth - 10; // 10px margin
-        const maxY = window.innerHeight - btnHeight - 10;
+        // Random position inside the card
+        const maxX = cardRect.width - btnWidth - 10; // 10px margin
+        const maxY = cardRect.height - btnHeight - 10;
 
-        const x = Math.random() * maxX + 5; // minimum margin 5px
+        const x = Math.random() * maxX + 5;
         const y = Math.random() * maxY + 5;
 
         yesBtn.style.left = x + "px";
         yesBtn.style.top = y + "px";
-        yesBtn.style.transform = "translateX(0)"; // remove previous translate
+        yesBtn.style.transform = "translateX(0)";
       } else {
-        // 6th click: show cute message
+        // 6th click: show message
         document.body.innerHTML = `
           <div style="
             display:flex;
