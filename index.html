@@ -25,7 +25,6 @@
       box-shadow: 0 20px 40px rgba(0,0,0,0.2);
       width: 85%;
       max-width: 320px;
-      /* Fixed height ensures the button has a defined area to move in */
       height: 400px; 
       display: flex;
       flex-direction: column;
@@ -38,18 +37,14 @@
       font-size: 22px;
     }
 
-    /* This is the boundary for the moving button */
     .move-area {
       flex-grow: 1;
       position: relative;
       width: 100%;
-      border-radius: 10px;
-      /* background: #fff5f7;  Optional: uncomment to see the movement zone */
     }
 
     #yes {
       position: absolute;
-      /* Initial position */
       left: 50%;
       top: 20%;
       transform: translate(-50%, -50%);
@@ -60,7 +55,7 @@
       background: #ff2f68;
       color: white;
       cursor: pointer;
-      transition: all 0.2s ease;
+      transition: all 0.15s ease-out; /* Snappier movement */
       white-space: nowrap;
       z-index: 10;
     }
@@ -107,52 +102,50 @@
     const yesBtn = document.getElementById("yes");
     const boundary = document.getElementById("boundary");
     let clickCount = 0;
-    const maxClicks = 6; // User must "catch" it 6 times
+    const targetClicks = 6; 
 
     function moveButton() {
-      // Get dimensions of the move-area
       const areaWidth = boundary.clientWidth;
       const areaHeight = boundary.clientHeight;
-      
       const btnWidth = yesBtn.offsetWidth;
       const btnHeight = yesBtn.offsetHeight;
 
-      // Calculate max possible coordinates so it stays inside
       const maxX = areaWidth - btnWidth;
       const maxY = areaHeight - btnHeight;
 
       const randomX = Math.floor(Math.random() * maxX);
       const randomY = Math.floor(Math.random() * maxY);
 
-      // Remove the initial centering transform and set new coordinates
       yesBtn.style.transform = "none";
       yesBtn.style.left = randomX + "px";
       yesBtn.style.top = randomY + "px";
     }
 
-    // Move on hover (desktop) or touch (mobile)
+    // Trigger movement when hovering or touching
     yesBtn.addEventListener("mouseover", moveButton);
     yesBtn.addEventListener("touchstart", (e) => {
-      e.preventDefault(); // Prevents accidental clicking
+      e.preventDefault(); 
       moveButton();
     });
 
-    // When they finally click it
+    // Handle the successful click
     yesBtn.addEventListener("click", () => {
       clickCount++;
       
-      if (clickCount >= maxClicks) {
+      if (clickCount >= targetClicks) {
+        // The final "Gotcha" screen
         document.body.innerHTML = `
           <div style="display:flex; justify-content:center; align-items:center; height:100vh; background:linear-gradient(135deg,#ff4d6d,#ff85a1); font-family:Arial; text-align:center; color:white; padding:20px;">
-            <h1>💖 FINALLY! 💖<br>Happy Valentine’s Day 😘</h1>
+            <h1>Dammit....I mean yaay you said yes🫠!</h1>
           </div>
         `;
       } else {
+        // Move it again if they haven't hit the count yet
         moveButton();
       }
     });
 
-    // Floating hearts
+    // Floating hearts background
     for (let i = 0; i < 15; i++) {
       const heart = document.createElement("div");
       heart.className = "heart";
