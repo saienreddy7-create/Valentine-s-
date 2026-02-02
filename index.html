@@ -43,12 +43,12 @@
       border-radius: 30px;
       cursor: pointer;
       transition: 0.2s ease;
+      position: absolute;
     }
 
     #yes {
       background: #ff2f68;
       color: white;
-      position: absolute;
       left: 50%;
       top: 0;
       transform: translateX(-50%);
@@ -57,9 +57,8 @@
     #no {
       background: #ddd;
       color: #555;
-      position: absolute;
-      bottom: 0;
       left: 50%;
+      bottom: 0;
       transform: translateX(-50%);
     }
 
@@ -89,42 +88,35 @@
 
   <script>
     const yesBtn = document.getElementById("yes");
-    let tries = 0;
-    const maxTries = 5;
-
-    yesBtn.addEventListener("mouseenter", () => {
-      if (tries >= maxTries) return;
-
-      tries++;
-
-      const x = Math.random() * (window.innerWidth - yesBtn.offsetWidth);
-      const y = Math.random() * (window.innerHeight - yesBtn.offsetHeight);
-
-      yesBtn.style.left = `${x}px`;
-      yesBtn.style.top = `${y}px`;
-
-      if (tries === maxTries) {
-        yesBtn.textContent = "Okay okay… click me 💕";
-      }
-    });
+    let clickCount = 0;
+    const maxClicks = 5;
 
     yesBtn.addEventListener("click", () => {
-      if (tries < maxTries) return;
+      clickCount++;
 
-      document.body.innerHTML = `
-        <div style="
-          display:flex;
-          justify-content:center;
-          align-items:center;
-          height:100vh;
-          background:linear-gradient(135deg,#ff4d6d,#ff85a1);
-          font-family:Arial;
-          text-align:center;
-          color:white;
-          padding:20px;">
-          <h1>💖 I knew you’d say yes! 💖<br>Happy Valentine’s Day 😘</h1>
-        </div>
-      `;
+      if (clickCount <= maxClicks) {
+        // Move button to random position
+        const x = Math.random() * (window.innerWidth - yesBtn.offsetWidth);
+        const y = Math.random() * (window.innerHeight - yesBtn.offsetHeight);
+        yesBtn.style.left = x + "px";
+        yesBtn.style.top = y + "px";
+      } else {
+        // 6th click, show cute message
+        document.body.innerHTML = `
+          <div style="
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            height:100vh;
+            background:linear-gradient(135deg,#ff4d6d,#ff85a1);
+            font-family:Arial;
+            text-align:center;
+            color:white;
+            padding:20px;">
+            <h1>💖 Yay! You said yes! 💖<br>Happy Valentine’s Day 😘</h1>
+          </div>
+        `;
+      }
     });
 
     // floating hearts
@@ -139,4 +131,4 @@
   </script>
 
 </body>
-      </html>
+</html>
