@@ -26,7 +26,8 @@
       max-width: 320px;
       width: 90%;
       position: relative;
-      height: 250px; /* fixed height for mobile-safe button movement */
+      height: 250px; /* fixed height for mobile-friendly movement */
+      overflow: hidden;
     }
 
     h1 {
@@ -103,13 +104,15 @@
 
       if (clickCount <= maxClicks) {
         // Get card dimensions
-        const cardRect = card.getBoundingClientRect();
+        const cardWidth = card.clientWidth;
+        const cardHeight = card.clientHeight;
+
         const btnWidth = yesBtn.offsetWidth;
         const btnHeight = yesBtn.offsetHeight;
 
         // Random position inside the card
-        const maxX = cardRect.width - btnWidth - 10; // 10px margin
-        const maxY = cardRect.height - btnHeight - 10;
+        const maxX = cardWidth - btnWidth - 10; // 10px margin
+        const maxY = cardHeight - btnHeight - 10;
 
         const x = Math.random() * maxX + 5;
         const y = Math.random() * maxY + 5;
@@ -118,7 +121,7 @@
         yesBtn.style.top = y + "px";
         yesBtn.style.transform = "translateX(0)";
       } else {
-        // 6th click: show message
+        // 6th click: show cute message
         document.body.innerHTML = `
           <div style="
             display:flex;
