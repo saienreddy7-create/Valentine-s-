@@ -3,18 +3,19 @@
 <head>
   <meta charset="UTF-8">
   <title>Will You Be My Valentine?</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
 
   <style>
     body {
       margin: 0;
       height: 100vh;
       background: linear-gradient(135deg, #ff4d6d, #ff85a1);
-      font-family: Arial, sans-serif;
+      font-family: 'Segoe UI', Arial, sans-serif;
       display: flex;
       align-items: center;
       justify-content: center;
       overflow: hidden;
+      touch-action: manipulation;
     }
 
     .card {
@@ -25,7 +26,7 @@
       box-shadow: 0 20px 40px rgba(0,0,0,0.2);
       width: 85%;
       max-width: 320px;
-      height: 400px; 
+      height: 420px; 
       display: flex;
       flex-direction: column;
       position: relative;
@@ -33,7 +34,7 @@
 
     h1 {
       color: #ff2f68;
-      margin: 10px 0 20px 0;
+      margin: 10px 0;
       font-size: 22px;
     }
 
@@ -41,6 +42,7 @@
       flex-grow: 1;
       position: relative;
       width: 100%;
+      margin: 10px 0;
     }
 
     #yes {
@@ -48,16 +50,18 @@
       left: 50%;
       top: 50%;
       transform: translate(-50%, -50%);
-      padding: 12px 28px;
-      font-size: 16px;
+      padding: 12px 35px;
+      font-size: 18px;
+      font-weight: bold;
       border: none;
       border-radius: 30px;
       background: #ff2f68;
       color: white;
       cursor: pointer;
-      transition: all 0.15s ease-out;
+      transition: all 0.2s ease;
       white-space: nowrap;
-      z-index: 10;
+      z-index: 100;
+      box-shadow: 0 4px 15px rgba(255, 47, 104, 0.3);
     }
 
     #no {
@@ -65,10 +69,10 @@
       font-size: 16px;
       border: none;
       border-radius: 30px;
-      background: #ddd;
-      color: #555;
+      background: #eee;
+      color: #777;
       cursor: pointer;
-      margin-top: 20px;
+      margin-top: 10px;
       align-self: center;
     }
 
@@ -88,8 +92,8 @@
 </head>
 <body>
 
-  <div class="card">
-    <h1 id="main-title">💘 Will you be my Valentine? 💘</h1>
+  <div class="card" id="card">
+    <h1>💘 Will you be my Valentine? 💘</h1>
 
     <div class="move-area" id="boundary">
       <button id="yes">Yes 💖</button>
@@ -101,56 +105,57 @@
   <script>
     const yesBtn = document.getElementById("yes");
     const boundary = document.getElementById("boundary");
-    const title = document.getElementById("main-title");
     
-    let moveCount = 0;
-    const maxMoves = 5; // After 5 jumps, it stays still on the 6th spot
+    let attempts = 0;
+    const maxAttempts = 5; // Jumps 5 times, 6th time it's catchable
+
+    function handleInteraction(e) {
+      if (attempts < maxAttempts) {
+        // Stop the actual click/tap from happening while it's jumping
+        if (e) e.preventDefault();
+        
+        moveButton();
+        attempts++;
+      } else {
+        // On the 6th attempt, we do nothing here, allowing the 'click' to work
+        yesBtn.style.background = "#2ecc71"; // Optional: turn green to show it's catchable
+      }
+    }
 
     function moveButton() {
-      // If we've already jumped 5 times, stop moving so they can finally click it!
-      if (moveCount >= maxMoves) {
-        yesBtn.style.transition = "none"; 
-        return; 
-      }
-
-      moveCount++;
-
       const areaWidth = boundary.clientWidth;
       const areaHeight = boundary.clientHeight;
       const btnWidth = yesBtn.offsetWidth;
       const btnHeight = yesBtn.offsetHeight;
 
+      // Ensure it stays strictly inside the white area
       const maxX = areaWidth - btnWidth;
       const maxY = areaHeight - btnHeight;
 
-      const randomX = Math.floor(Math.random() * maxX);
-      const randomY = Math.floor(Math.random() * maxY);
+      const randomX = Math.random() * maxX;
+      const randomY = Math.random() * maxY;
 
       yesBtn.style.transform = "none";
       yesBtn.style.left = randomX + "px";
       yesBtn.style.top = randomY + "px";
     }
 
-    // Move on hover or touch
-    yesBtn.addEventListener("mouseover", moveButton);
-    yesBtn.addEventListener("touchstart", (e) => {
-      // Only move if we haven't reached the limit
-      if (moveCount < maxMoves) {
-        e.preventDefault(); 
-        moveButton();
+    // Capture the hover/touch to trigger the jump
+    yesBtn.addEventListener("mouseover", handleInteraction);
+    yesBtn.addEventListener("touchstart", handleInteraction, {passive: false});
+
+    // The actual success trigger
+    yesBtn.addEventListener("click", () => {
+      if (attempts >= maxAttempts) {
+        document.body.innerHTML = `
+          <div style="display:flex; flex-direction:column; justify-content:center; align-items:center; height:100vh; width:100vw; background:linear-gradient(135deg,#ff4d6d,#ff85a1); font-family:Arial, sans-serif; text-align:center; color:white; padding:20px; box-sizing:border-box;">
+            <h1 style="font-size: 32px; line-height: 1.4;">Dammit....I mean yaay you said yes🫠!</h1>
+          </div>
+        `;
       }
     });
 
-    // Final click handler
-    yesBtn.addEventListener("click", () => {
-      document.body.innerHTML = `
-        <div style="display:flex; justify-content:center; align-items:center; height:100vh; background:linear-gradient(135deg,#ff4d6d,#ff85a1); font-family:Arial; text-align:center; color:white; padding:20px;">
-          <h1 style="font-size: 28px;">Dammit....I mean yaay you said yes🫠!</h1>
-        </div>
-      `;
-    });
-
-    // Floating hearts
+    // Background hearts
     for (let i = 0; i < 15; i++) {
       const heart = document.createElement("div");
       heart.className = "heart";
