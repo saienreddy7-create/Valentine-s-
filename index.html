@@ -19,54 +19,51 @@
 
     .card {
       background: white;
-      padding: 40px;
+      padding: 20px;
       border-radius: 20px;
       text-align: center;
       box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-      max-width: 320px;
       width: 90%;
+      max-width: 320px;
       position: relative;
-      height: 250px; /* fixed height for mobile-friendly movement */
+      height: 300px; /* enough space for button movement */
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
       overflow: hidden;
     }
 
     h1 {
       color: #ff2f68;
-      margin-bottom: 30px;
+      margin: 0 0 10px 0;
+      font-size: 20px;
     }
 
-    .buttons {
+    .button-container {
       position: relative;
-      width: 100%;
-      height: 100%;
+      flex-grow: 1;
     }
 
-    button {
+    #yes {
+      position: absolute;
       padding: 12px 28px;
       font-size: 16px;
       border: none;
       border-radius: 30px;
-      cursor: pointer;
-      transition: 0.2s ease;
-      position: absolute;
-      max-width: 40%;
-      word-wrap: break-word;
-    }
-
-    #yes {
       background: #ff2f68;
       color: white;
-      left: 50%;
-      top: 20px;
-      transform: translateX(-50%);
+      cursor: pointer;
     }
 
     #no {
+      padding: 12px 28px;
+      font-size: 16px;
+      border: none;
+      border-radius: 30px;
       background: #ddd;
       color: #555;
-      left: 50%;
-      bottom: 20px;
-      transform: translateX(-50%);
+      cursor: pointer;
+      margin-top: 10px;
     }
 
     .heart {
@@ -87,15 +84,16 @@
   <div class="card">
     <h1>💘 Will you be my Valentine? 💘</h1>
 
-    <div class="buttons">
+    <div class="button-container">
       <button id="yes">Yes 💖</button>
-      <button id="no" onclick="alert('Too bad 😌💔')">No</button>
     </div>
+
+    <button id="no" onclick="alert('Too bad 😌💔')">No</button>
   </div>
 
   <script>
     const yesBtn = document.getElementById("yes");
-    const card = document.querySelector('.card');
+    const container = document.querySelector('.button-container');
     let clickCount = 0;
     const maxClicks = 5;
 
@@ -103,25 +101,20 @@
       clickCount++;
 
       if (clickCount <= maxClicks) {
-        // Get card dimensions
-        const cardWidth = card.clientWidth;
-        const cardHeight = card.clientHeight;
+        const containerWidth = container.clientWidth;
+        const containerHeight = container.clientHeight;
 
         const btnWidth = yesBtn.offsetWidth;
         const btnHeight = yesBtn.offsetHeight;
 
-        // Random position inside the card
-        const maxX = cardWidth - btnWidth - 10; // 10px margin
-        const maxY = cardHeight - btnHeight - 10;
-
-        const x = Math.random() * maxX + 5;
-        const y = Math.random() * maxY + 5;
+        // random position inside the container
+        const x = Math.random() * (containerWidth - btnWidth);
+        const y = Math.random() * (containerHeight - btnHeight);
 
         yesBtn.style.left = x + "px";
         yesBtn.style.top = y + "px";
-        yesBtn.style.transform = "translateX(0)";
       } else {
-        // 6th click: show cute message
+        // 6th click: show message
         document.body.innerHTML = `
           <div style="
             display:flex;
