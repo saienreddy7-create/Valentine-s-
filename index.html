@@ -23,29 +23,36 @@
       border-radius: 20px;
       text-align: center;
       box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-      width: 90%;
+      width: 85%;
       max-width: 320px;
-      position: relative;
-      height: 300px; /* enough space for button movement */
+      /* Fixed height ensures the button has a defined area to move in */
+      height: 400px; 
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
-      overflow: hidden;
+      position: relative;
     }
 
     h1 {
       color: #ff2f68;
-      margin: 0 0 10px 0;
-      font-size: 20px;
+      margin: 10px 0 20px 0;
+      font-size: 22px;
     }
 
-    .button-container {
-      position: relative;
+    /* This is the boundary for the moving button */
+    .move-area {
       flex-grow: 1;
+      position: relative;
+      width: 100%;
+      border-radius: 10px;
+      /* background: #fff5f7;  Optional: uncomment to see the movement zone */
     }
 
     #yes {
       position: absolute;
+      /* Initial position */
+      left: 50%;
+      top: 20%;
+      transform: translate(-50%, -50%);
       padding: 12px 28px;
       font-size: 16px;
       border: none;
@@ -53,6 +60,9 @@
       background: #ff2f68;
       color: white;
       cursor: pointer;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+      z-index: 10;
     }
 
     #no {
@@ -63,18 +73,20 @@
       background: #ddd;
       color: #555;
       cursor: pointer;
-      margin-top: 10px;
+      margin-top: 20px;
+      align-self: center;
     }
 
     .heart {
       position: absolute;
       color: rgba(255,255,255,0.4);
       font-size: 24px;
-      animation: float 6s infinite ease-in;
+      animation: float 6s infinite linear;
+      pointer-events: none;
     }
 
     @keyframes float {
-      from { transform: translateY(100vh); }
+      from { transform: translateY(110vh); }
       to { transform: translateY(-10vh); }
     }
   </style>
@@ -84,7 +96,7 @@
   <div class="card">
     <h1>💘 Will you be my Valentine? 💘</h1>
 
-    <div class="button-container">
+    <div class="move-area" id="boundary">
       <button id="yes">Yes 💖</button>
     </div>
 
@@ -93,46 +105,54 @@
 
   <script>
     const yesBtn = document.getElementById("yes");
-    const container = document.querySelector('.button-container');
+    const boundary = document.getElementById("boundary");
     let clickCount = 0;
-    const maxClicks = 5;
+    const maxClicks = 6; // User must "catch" it 6 times
 
+    function moveButton() {
+      // Get dimensions of the move-area
+      const areaWidth = boundary.clientWidth;
+      const areaHeight = boundary.clientHeight;
+      
+      const btnWidth = yesBtn.offsetWidth;
+      const btnHeight = yesBtn.offsetHeight;
+
+      // Calculate max possible coordinates so it stays inside
+      const maxX = areaWidth - btnWidth;
+      const maxY = areaHeight - btnHeight;
+
+      const randomX = Math.floor(Math.random() * maxX);
+      const randomY = Math.floor(Math.random() * maxY);
+
+      // Remove the initial centering transform and set new coordinates
+      yesBtn.style.transform = "none";
+      yesBtn.style.left = randomX + "px";
+      yesBtn.style.top = randomY + "px";
+    }
+
+    // Move on hover (desktop) or touch (mobile)
+    yesBtn.addEventListener("mouseover", moveButton);
+    yesBtn.addEventListener("touchstart", (e) => {
+      e.preventDefault(); // Prevents accidental clicking
+      moveButton();
+    });
+
+    // When they finally click it
     yesBtn.addEventListener("click", () => {
       clickCount++;
-
-      if (clickCount <= maxClicks) {
-        const containerWidth = container.clientWidth;
-        const containerHeight = container.clientHeight;
-
-        const btnWidth = yesBtn.offsetWidth;
-        const btnHeight = yesBtn.offsetHeight;
-
-        // random position inside the container
-        const x = Math.random() * (containerWidth - btnWidth);
-        const y = Math.random() * (containerHeight - btnHeight);
-
-        yesBtn.style.left = x + "px";
-        yesBtn.style.top = y + "px";
-      } else {
-        // 6th click: show message
+      
+      if (clickCount >= maxClicks) {
         document.body.innerHTML = `
-          <div style="
-            display:flex;
-            justify-content:center;
-            align-items:center;
-            height:100vh;
-            background:linear-gradient(135deg,#ff4d6d,#ff85a1);
-            font-family:Arial;
-            text-align:center;
-            color:white;
-            padding:20px;">
-            <h1>💖 Yay! You said yes! 💖<br>Happy Valentine’s Day 😘</h1>
+          <div style="display:flex; justify-content:center; align-items:center; height:100vh; background:linear-gradient(135deg,#ff4d6d,#ff85a1); font-family:Arial; text-align:center; color:white; padding:20px;">
+            <h1>💖 FINALLY! 💖<br>Happy Valentine’s Day 😘</h1>
           </div>
         `;
+      } else {
+        moveButton();
       }
     });
 
-    // floating hearts
+    // Floating hearts
     for (let i = 0; i < 15; i++) {
       const heart = document.createElement("div");
       heart.className = "heart";
