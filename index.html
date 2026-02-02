@@ -42,7 +42,6 @@
       flex-grow: 1;
       position: relative;
       width: 100%;
-      margin: 10px 0;
     }
 
     #yes {
@@ -56,12 +55,10 @@
       border: none;
       border-radius: 30px;
       background: #ff2f68;
-      color: white;
+      color: white !important; /* Explicitly white */
       cursor: pointer;
       transition: all 0.2s ease;
-      white-space: nowrap;
       z-index: 100;
-      box-shadow: 0 4px 15px rgba(255, 47, 104, 0.3);
     }
 
     #no {
@@ -71,9 +68,31 @@
       border-radius: 30px;
       background: #eee;
       color: #777;
-      cursor: pointer;
       margin-top: 10px;
       align-self: center;
+    }
+
+    /* Success Screen Styles */
+    .success-container {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      width: 100vw;
+      background: linear-gradient(135deg,#ff4d6d,#ff85a1);
+      text-align: center;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    .success-text {
+      color: white !important;
+      font-size: 32px;
+      font-weight: bold;
+      line-height: 1.4;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+      margin: 0;
     }
 
     .heart {
@@ -94,11 +113,9 @@
 
   <div class="card" id="card">
     <h1>💘 Will you be my Valentine? 💘</h1>
-
     <div class="move-area" id="boundary">
       <button id="yes">Yes 💖</button>
     </div>
-
     <button id="no" onclick="alert('Too bad 😌💔')">No</button>
   </div>
 
@@ -107,55 +124,39 @@
     const boundary = document.getElementById("boundary");
     
     let attempts = 0;
-    const maxAttempts = 5; // Jumps 5 times, 6th time it's catchable
+    const maxAttempts = 5; 
 
     function handleInteraction(e) {
       if (attempts < maxAttempts) {
-        // Stop the actual click/tap from happening while it's jumping
-        if (e) e.preventDefault();
+        if (e.type === 'touchstart') e.preventDefault();
         
-        moveButton();
+        const areaWidth = boundary.clientWidth;
+        const areaHeight = boundary.clientHeight;
+        const maxX = areaWidth - yesBtn.offsetWidth;
+        const maxY = areaHeight - yesBtn.offsetHeight;
+
+        yesBtn.style.transform = "none";
+        yesBtn.style.left = Math.random() * maxX + "px";
+        yesBtn.style.top = Math.random() * maxY + "px";
+        
         attempts++;
-      } else {
-        // On the 6th attempt, we do nothing here, allowing the 'click' to work
-        yesBtn.style.background = "#2ecc71"; // Optional: turn green to show it's catchable
       }
+      // On attempt 6, the function does nothing, making it clickable.
     }
 
-    function moveButton() {
-      const areaWidth = boundary.clientWidth;
-      const areaHeight = boundary.clientHeight;
-      const btnWidth = yesBtn.offsetWidth;
-      const btnHeight = yesBtn.offsetHeight;
-
-      // Ensure it stays strictly inside the white area
-      const maxX = areaWidth - btnWidth;
-      const maxY = areaHeight - btnHeight;
-
-      const randomX = Math.random() * maxX;
-      const randomY = Math.random() * maxY;
-
-      yesBtn.style.transform = "none";
-      yesBtn.style.left = randomX + "px";
-      yesBtn.style.top = randomY + "px";
-    }
-
-    // Capture the hover/touch to trigger the jump
     yesBtn.addEventListener("mouseover", handleInteraction);
     yesBtn.addEventListener("touchstart", handleInteraction, {passive: false});
 
-    // The actual success trigger
     yesBtn.addEventListener("click", () => {
       if (attempts >= maxAttempts) {
         document.body.innerHTML = `
-          <div style="display:flex; flex-direction:column; justify-content:center; align-items:center; height:100vh; width:100vw; background:linear-gradient(135deg,#ff4d6d,#ff85a1); font-family:Arial, sans-serif; text-align:center; color:white; padding:20px; box-sizing:border-box;">
-            <h1 style="font-size: 32px; line-height: 1.4;">Dammit....I mean yaay you said yes🫠!</h1>
+          <div class="success-container">
+            <h1 class="success-text">Dammit....I mean yaay you said yes🫠!</h1>
           </div>
         `;
       }
     });
 
-    // Background hearts
     for (let i = 0; i < 15; i++) {
       const heart = document.createElement("div");
       heart.className = "heart";
