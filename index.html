@@ -46,7 +46,7 @@
     #yes {
       position: absolute;
       left: 50%;
-      top: 20%;
+      top: 50%;
       transform: translate(-50%, -50%);
       padding: 12px 28px;
       font-size: 16px;
@@ -55,7 +55,7 @@
       background: #ff2f68;
       color: white;
       cursor: pointer;
-      transition: all 0.15s ease-out; /* Snappier movement */
+      transition: all 0.15s ease-out;
       white-space: nowrap;
       z-index: 10;
     }
@@ -89,7 +89,7 @@
 <body>
 
   <div class="card">
-    <h1>💘 Will you be my Valentine? 💘</h1>
+    <h1 id="main-title">💘 Will you be my Valentine? 💘</h1>
 
     <div class="move-area" id="boundary">
       <button id="yes">Yes 💖</button>
@@ -101,10 +101,20 @@
   <script>
     const yesBtn = document.getElementById("yes");
     const boundary = document.getElementById("boundary");
-    let clickCount = 0;
-    const targetClicks = 6; 
+    const title = document.getElementById("main-title");
+    
+    let moveCount = 0;
+    const maxMoves = 5; // After 5 jumps, it stays still on the 6th spot
 
     function moveButton() {
+      // If we've already jumped 5 times, stop moving so they can finally click it!
+      if (moveCount >= maxMoves) {
+        yesBtn.style.transition = "none"; 
+        return; 
+      }
+
+      moveCount++;
+
       const areaWidth = boundary.clientWidth;
       const areaHeight = boundary.clientHeight;
       const btnWidth = yesBtn.offsetWidth;
@@ -121,31 +131,26 @@
       yesBtn.style.top = randomY + "px";
     }
 
-    // Trigger movement when hovering or touching
+    // Move on hover or touch
     yesBtn.addEventListener("mouseover", moveButton);
     yesBtn.addEventListener("touchstart", (e) => {
-      e.preventDefault(); 
-      moveButton();
-    });
-
-    // Handle the successful click
-    yesBtn.addEventListener("click", () => {
-      clickCount++;
-      
-      if (clickCount >= targetClicks) {
-        // The final "Gotcha" screen
-        document.body.innerHTML = `
-          <div style="display:flex; justify-content:center; align-items:center; height:100vh; background:linear-gradient(135deg,#ff4d6d,#ff85a1); font-family:Arial; text-align:center; color:white; padding:20px;">
-            <h1>Dammit....I mean yaay you said yes🫠!</h1>
-          </div>
-        `;
-      } else {
-        // Move it again if they haven't hit the count yet
+      // Only move if we haven't reached the limit
+      if (moveCount < maxMoves) {
+        e.preventDefault(); 
         moveButton();
       }
     });
 
-    // Floating hearts background
+    // Final click handler
+    yesBtn.addEventListener("click", () => {
+      document.body.innerHTML = `
+        <div style="display:flex; justify-content:center; align-items:center; height:100vh; background:linear-gradient(135deg,#ff4d6d,#ff85a1); font-family:Arial; text-align:center; color:white; padding:20px;">
+          <h1 style="font-size: 28px;">Dammit....I mean yaay you said yes🫠!</h1>
+        </div>
+      `;
+    });
+
+    // Floating hearts
     for (let i = 0; i < 15; i++) {
       const heart = document.createElement("div");
       heart.className = "heart";
